@@ -2,6 +2,7 @@
 package structs
 
 import (
+	"database/sql"
 	"fmt"
 
 	"reflect"
@@ -196,6 +197,58 @@ func (s *Struct) Values() []interface{} {
 			s, ok := val.Interface().(fmt.Stringer)
 			if ok {
 				t = append(t, s.String())
+			}
+			continue
+		}
+
+		if tagOpts.Has("nullstring") {
+			sqlNullString, ok := val.Interface().(sql.NullString)
+			if ok {
+				value, err := sqlNullString.Value()
+				if err == nil {
+					t = append(t, value)
+				} else {
+					panic(err)
+				}
+			}
+			continue
+		}
+
+		if tagOpts.Has("nullfloat64") {
+			sqlNullFloat64, ok := val.Interface().(sql.NullFloat64)
+			if ok {
+				value, err := sqlNullFloat64.Value()
+				if err == nil {
+					t = append(t, value)
+				} else {
+					panic(err)
+				}
+			}
+			continue
+		}
+
+		if tagOpts.Has("nullint64") {
+			sqlNullInt64, ok := val.Interface().(sql.NullInt64)
+			if ok {
+				value, err := sqlNullInt64.Value()
+				if err == nil {
+					t = append(t, value)
+				} else {
+					panic(err)
+				}
+			}
+			continue
+		}
+
+		if tagOpts.Has("nullbool") {
+			sqlNullBool, ok := val.Interface().(sql.NullBool)
+			if ok {
+				value, err := sqlNullBool.Value()
+				if err == nil {
+					t = append(t, value)
+				} else {
+					panic(err)
+				}
 			}
 			continue
 		}
