@@ -4,8 +4,11 @@ package structs
 import (
 	"database/sql"
 	"fmt"
+	"log"
 
 	"reflect"
+
+	"gopkg.in/guregu/null.v3"
 )
 
 var (
@@ -201,7 +204,7 @@ func (s *Struct) Values() []interface{} {
 			continue
 		}
 
-		if tagOpts.Has("nullstring") {
+		if tagOpts.Has("sql.nullstring") {
 			sqlNullString, ok := val.Interface().(sql.NullString)
 			if ok {
 				value, err := sqlNullString.Value()
@@ -249,6 +252,47 @@ func (s *Struct) Values() []interface{} {
 				} else {
 					panic(err)
 				}
+			}
+			continue
+		}
+
+		if tagOpts.Has("null.string") {
+			nullString, ok := val.Interface().(null.String)
+			if ok {
+				value := nullString.ValueOrZero()
+				t = append(t, value)
+			} else {
+				log.Fatal("field had structTag null.string but cannot be converted to null.String")
+			}
+			continue
+		}
+		if tagOpts.Has("null.float") {
+			nullFloat, ok := val.Interface().(null.Float)
+			if ok {
+				value := nullFloat.ValueOrZero()
+				t = append(t, value)
+			} else {
+				log.Fatal("field had structTag null.float but cannot be converted to null.Float")
+			}
+			continue
+		}
+		if tagOpts.Has("null.int") {
+			nullInt, ok := val.Interface().(null.Int)
+			if ok {
+				value := nullInt.ValueOrZero()
+				t = append(t, value)
+			} else {
+				log.Fatal("field had structTag null.int but cannot be converted to null.Int")
+			}
+			continue
+		}
+		if tagOpts.Has("null.bool") {
+			nullBool, ok := val.Interface().(null.Bool)
+			if ok {
+				value := nullBool.ValueOrZero()
+				t = append(t, value)
+			} else {
+				log.Fatal("field had structTag null.bool but cannot be converted to null.Bool")
 			}
 			continue
 		}
