@@ -243,7 +243,7 @@ func (s *Struct) Values() []interface{} {
 			continue
 		}
 
-		if tagOpts.Has("null.bool") {
+		if tagOpts.Has("sql.nullbool") {
 			sqlNullBool, ok := val.Interface().(sql.NullBool)
 			if ok {
 				value, err := sqlNullBool.Value()
@@ -261,7 +261,6 @@ func (s *Struct) Values() []interface{} {
 			if ok {
 				v, _ := nullString.Value()
 				if v != nil {
-					fmt.Println("appending nullString.value")
 					t = append(t, v)
 				} else {
 					t = append(t, nil)
@@ -274,8 +273,12 @@ func (s *Struct) Values() []interface{} {
 		if tagOpts.Has("null.float") {
 			nullFloat, ok := val.Interface().(null.Float)
 			if ok {
-				value := nullFloat.ValueOrZero()
-				t = append(t, value)
+				v, _ := nullFloat.Value()
+				if v != nil {
+					t = append(t, v)
+				} else {
+					t = append(t, nil)
+				}
 			} else {
 				log.Fatal("field had structTag null.float but cannot be converted to null.Float")
 			}
@@ -284,8 +287,12 @@ func (s *Struct) Values() []interface{} {
 		if tagOpts.Has("null.int") {
 			nullInt, ok := val.Interface().(null.Int)
 			if ok {
-				value := nullInt.ValueOrZero()
-				t = append(t, value)
+				v, _ := nullInt.Value()
+				if v != nil {
+					t = append(t, v)
+				} else {
+					t = append(t, nil)
+				}
 			} else {
 				log.Fatal("field had structTag null.int but cannot be converted to null.Int")
 			}
@@ -294,14 +301,17 @@ func (s *Struct) Values() []interface{} {
 		if tagOpts.Has("null.bool") {
 			nullBool, ok := val.Interface().(null.Bool)
 			if ok {
-				value := nullBool.ValueOrZero()
-				t = append(t, value)
+				v, _ := nullBool.Value()
+				if v != nil {
+					t = append(t, v)
+				} else {
+					t = append(t, nil)
+				}
 			} else {
 				log.Fatal("field had structTag null.bool but cannot be converted to null.Bool")
 			}
 			continue
 		}
-
 		if IsStruct(val.Interface()) && !tagOpts.Has("omitnested") {
 			// look out for embedded structs, and convert them to a
 			// []interface{} to be added to the final values slice
