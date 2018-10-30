@@ -243,7 +243,7 @@ func (s *Struct) Values() []interface{} {
 			continue
 		}
 
-		if tagOpts.Has("nullbool") {
+		if tagOpts.Has("null.bool") {
 			sqlNullBool, ok := val.Interface().(sql.NullBool)
 			if ok {
 				value, err := sqlNullBool.Value()
@@ -259,8 +259,13 @@ func (s *Struct) Values() []interface{} {
 		if tagOpts.Has("null.string") {
 			nullString, ok := val.Interface().(null.String)
 			if ok {
-				value := nullString.ValueOrZero()
-				t = append(t, value)
+				v, _ := nullString.Value()
+				if v != nil {
+					fmt.Println("appending nullString.value")
+					t = append(t, v)
+				} else {
+					t = append(t, nil)
+				}
 			} else {
 				log.Fatal("field had structTag null.string but cannot be converted to null.String")
 			}
